@@ -1,13 +1,18 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <img alt="Vue logo" src="./assets/logo.png">
+    <PostComponent />
   </div>
 </template>
 
 <script>
+import PostComponent from './components/PostComponent.vue'
+
 export default {
-  name: 'App'
+  name: 'app',
+  components: {
+    PostComponent
+  }
 }
 </script>
 
