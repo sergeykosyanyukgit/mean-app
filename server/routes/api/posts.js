@@ -3,6 +3,9 @@ const mongodb = require('mongodb');
 
 const router = express.Router();
 
+const client = await mongodb.MongoClient.connect('mongodb+srv://sergey_admin_22:5VAs8wkFx5fXTrr@cluster0-whxsz.gcp.mongodb.net/vue_express?retryWrites=true', {
+    useNewUrlParser: true
+});
 // Get Posts
 router.get('/', async (req, res) => {
     const posts = await loadPostsCollection();
@@ -27,9 +30,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 async function loadPostsCollection(){
-    const client = await mongodb.MongoClient.connect('mongodb+srv://sergey_admin_22:5VAs8wkFx5fXTrr@cluster0-whxsz.gcp.mongodb.net/vue_express?retryWrites=true', {
-        useNewUrlParser: true
-    });
+    
 
     return client.db('vue_express').collection('posts');
 }
