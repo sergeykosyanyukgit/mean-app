@@ -11,10 +11,10 @@ router.get('/', async (req, res) => {
 });
 
 // Add post
-router.post('/:text', async (req, res) => {
+router.post('/', async (req, res) => {
     const posts = await loadPostsCollection();
     await posts.insertOne({
-        text: req.params.text,
+        text: req.body.text,
         createdAt: new Date()
     });
     res.status(201).send();
