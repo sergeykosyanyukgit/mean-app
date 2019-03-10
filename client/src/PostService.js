@@ -21,6 +21,21 @@ class PostService {
         });
     }
 
+    static getPostsEsp() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const res = await axios.get(`${url}esp/`);
+                const data = res.data;
+                resolve(
+                    data.map(post =>({
+                        ...post
+                    }))
+                );
+            } catch(err) {
+                reject(err);
+            }
+        });
+    }
 
     // Create Post
     static insertPost(text) {

@@ -17,6 +17,13 @@ router.post('/esp/', async (req, res) => {
 });
 
 // Get Posts
+router.get('/esp/', async (req, res) => {
+    const posts = await loadPostsCollection('esp');
+    res.send(await posts.find({}).toArray());
+});
+
+
+// Get Posts
 router.get('/', async (req, res) => {
     const posts = await loadPostsCollection('posts');
     res.send(await posts.find({}).toArray());
