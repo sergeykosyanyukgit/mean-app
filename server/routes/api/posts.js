@@ -58,7 +58,7 @@ router.put('/:id', async (req, res) => {
     res.status(200).send();
 });
 
-router.put('/esp-reload-hum/', async (req, res) => {
+router.post('/esp-reload-hum/', async (req, res) => {
     const posts = await loadPostsCollection('posts');
     await posts.findOneAndUpdate({_id: new mongodb.ObjectID(req.body.id)}, {$set:{sensorValue:req.body.sensorValue}});
     res.status(200).send();
