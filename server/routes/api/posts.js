@@ -18,7 +18,7 @@ router.post('/esp/', async (req, res) => {
 
 // Get Posts
 router.get('/esp/', async (req, res) => {
-    const posts = await loadPostsCollection('esp');
+    const posts = await loadPostsCollection('posts');
     res.send(await posts.find({}).toArray());
 });
 
@@ -33,8 +33,13 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     const posts = await loadPostsCollection('posts');
     await posts.insertOne({
-        text: req.body.text,
-        createdAt: new Date()
+        prior: req.body.bufferTask.prior,
+        time: `${req.body.bufferTask.time}/${req.body.bufferTask.date}`,
+        textTask: req.body.bufferTask.textTask,
+        sensor: req.body.bufferTask.sensor,
+        motor: req.body.bufferTask.motor,
+        poliv: req.body.bufferTask.poliv,
+        sensorValue: 'Null'
     });
     res.status(201).send();
 });
@@ -43,6 +48,19 @@ router.post('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const posts = await loadPostsCollection('posts');
     await posts.deleteOne({_id: new mongodb.ObjectID(req.params.id)});
+    res.status(200).send();
+});
+
+// Delete Post
+router.put('/:id', async (req, res) => {
+    const posts = await loadPostsCollection('posts');
+    await posts.findOneAndUpdate({_id: new mongodb.ObjectID(req.params.id)}, {$set:{poliv:req.body.update}});
+    res.status(200).send();
+});
+
+router.put('/esp/:id', async (req, res) => {
+    const posts = await loadPostsCollection('posts');
+    await posts.findOneAndUpdate({_id: new mongodb.ObjectID(req.params.id)}, {$set:{sensorValue:req.body.sensorValue}});
     res.status(200).send();
 });
 

@@ -38,15 +38,21 @@ class PostService {
     }
 
     // Create Post
-    static insertPost(text) {
+    static insertPost(bufferTask) {
         return axios.post(url, {
-            text
+            bufferTask
         });
     }
 
     // Delete Post
     static deletePost(id) {
         return axios.delete(`${url}${id}`);
+    }
+
+    static usePoliv(id, update) {
+        return axios.put(`${url}${id}`, {
+            update
+        });
     }
 
 }

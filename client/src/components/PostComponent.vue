@@ -9,63 +9,44 @@
         >
         <div class="esp-post">
           <div class="head-text">
-            <span class="prior-text">{{ post.prior }}</span>
+            <span 
+              class="prior-text"
+              v-bind:class="{ red: post.prior == 'important', yellow: post.prior == 'fine', green: post.prior == 'weakly'}"
+            >{{ post.prior }}</span>
             <span class="time-text">{{ post.time }}</span>
+          </div>
+          <div class="port">
+            <span>SensorPort: {{ post.sensor }}</span>
+            <span> MotorPort: {{ post.motor }}</span>
           </div>
           <h1 class="text">{{ post.textTask }}</h1>
           <span class="sensor-text">{{ post.sensorValue }}</span>
           <div class="buttons-text">
-            <button>Выполнить</button>
-            <button>Позже</button>
+            <button @click="useNow(post._id)">Выполнить</button>
+            <button @click="useLater(post._id)">Позже</button>
           </div>
         </div>
       </div>
     </div>
     <div class="container-user">
-      <div class="user-post">item1</div>
-      <div class="user-post">item2</div>
-      <div class="user-post">item3</div>
-      <div class="user-post">item4</div>
-      <div class="user-post">item5</div>
-      <div class="user-post">item6</div>
+      <div class="inputs">
+        <div class="radio-buttons">
+          <label for="important">Important</label>
+          <input type="radio" name="prior" id="important" value="important" v-model="bufferTask.prior">
+          <label for="fine">fine</label>
+          <input type="radio" name="prior" id="fine" value="fine" v-model="bufferTask.prior">
+          <label for="weakly">weakly</label>
+          <input type="radio" name="prior" id="weakly" value="weakly" v-model="bufferTask.prior">
+        </div>
+        <input type="time" v-model="bufferTask.time">
+        <input type="date" v-model="bufferTask.date">
+        <input type="text" placeholder="Text from task"  v-model="bufferTask.textTask">
+        <input type="number" placeholder="Port sensor"  v-model="bufferTask.sensor">
+        <input type="number" placeholder="Port motor"  v-model="bufferTask.motor">
+        <button @click="addTask">Confirm</button>
+      </div>
     </div>
   </div>
-    <!--<h1>Latest Posts</h1>
-    
-          v-bind:class="{ red: post.prior == 'important' }"
-    <div class="create-post">
-      <label for="create-post">Say Something...</label>
-      <input type="text" id="create-post" v-model="text" placeholder="Create a post">
-      <button v-on:click="createPost">Post!</button>
-    </div>
-    <hr>
-    <p class="error" v-if="error">{{ error }}</p>
-    <div class="posts-container">
-      <div class="post"
-        v-for="(post, index) in posts"
-        v-bind:item="post"
-        v-bind:index="index"
-        v-bind:key="post._id"
-        v-on:click="deletePost(post._id)"
-      >
-        {{ `${post.createdAt.getDate()}/${post.createdAt.getMonth()}/${post.createdAt.getFullYear()}` }}
-        <p class="text">{{ post.text }}</p>
-      </div>
-    </div>
-
-    <div class="posts-container-esp">
-      <div class="esp-post"
-        v-for="(post, index) in espRes"
-        v-bind:item="post"
-        v-bind:index="index"
-        v-bind:key="post._id"
-        v-bind:class="{ red: post.type == 'danger' }"
-      >
-        <p class="text-esp">{{ post.text }}</p>
-      </div>
-    </div>
--->
-
 </template>
 
 <script>
@@ -77,50 +58,16 @@ export default {
   name: 'PostComponent',
   data() {
     return {
-      dailyTasks: [
-        { 
-          id: 0,
-          prior: 'important',
-          time: '10:50 10.03.2019',
-          textTask: 'Полить помидоры',
-          sensorValue: 'Влажность: 28%'
-        },
-        { 
-          id: 1,
-          prior: 'fine',
-          time: '10:50 10.03.2019',
-          textTask: 'Полить помидоры',
-          sensorValue: 'Влажность: 28%'
-        },
-        { 
-          id: 2,
-          prior: 'weakly',
-          time: '10:50 10.03.2019',
-          textTask: 'Полить помидоры',
-          sensorValue: 'Влажность: 28%'
-        },
-        { 
-          id: 3,
-          prior: 'important',
-          time: '10:50 10.03.2019',
-          textTask: 'Полить помидоры',
-          sensorValue: 'Влажность: 28%'
-        },
-        { 
-          id: 4,
-          prior: 'fine',
-          time: '10:50 10.03.2019',
-          textTask: 'Полить помидоры',
-          sensorValue: 'Влажность: 28%'
-        },
-        { 
-          id: 5,
-          prior: 'weakly',
-          time: '10:50 10.03.2019',
-          textTask: 'Полить помидоры',
-          sensorValue: 'Влажность: 28%'
-        }
-      ],
+      bufferTask: {
+        prior: '',
+        time: '',
+        date: '',
+        textTask: '',
+        sensor: null,
+        motor: null,
+        poliv: ''
+      },
+      dailyTasks: [],
       posts: [],
       error: '',
       text: '',
@@ -129,27 +76,65 @@ export default {
   },
   async created() {
     try {
-      this.posts = await PostService.getPosts();
-      this.espRes = await PostService.getPostsEsp();
+      this.dailyTasks = await PostService.getPosts();
     } catch(err) {
       this.error = err.message;
     }
   },
   methods: {
-    async createPost() {
-      await PostService.insertPost(this.text);
-      this.posts = await PostService.getPosts();
+    async addTask() {
+      if(this.bufferTask.prior != '' && this.bufferTask.time != '' && this.bufferTask.date != '' && this.bufferTask.textTask != '') {
+        await PostService.insertPost(this.bufferTask);
+        this.dailyTasks = await PostService.getPosts();
+      }
     },
-    async deletePost(id) {
+    async useNow(id) {
+      console.log(id);
+      await PostService.usePoliv(id, 'poliv');
+    },
+    useLater(id) {
+      console.log(id);
+    },
+    /*async deletePost(id) {
       await PostService.deletePost(id);
       this.posts = await PostService.getPosts();
-    }
+    }*/
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.port {
+  display: inline;
+  float: left;
+  margin-top: 30px;
+  padding: 2px;
+  background-color: tomato;
+}
+.radio-buttons {
+  width: 100%;
+}
+.radio-buttons > input {
+  
+}
+.container-user {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+}
+.container-user > div {
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+  width: 100%;
+  min-height: 100px;
+  border-radius: 8px;
+  margin: 10px;
+}
+.container-user > div:hover {
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.4);
+}
+
+
 .container {
   display: flex;
 }
@@ -165,7 +150,7 @@ export default {
   display: flex;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
   width: 240px;
-  height: 240px;
+  min-height: 240px;
   border-radius: 8px;
   margin: 10px;
   padding: 10px;
@@ -176,26 +161,12 @@ export default {
 .daily-post {
 
 }
+.daily-input {
+}
 
 
-.container-user {
-  width: 25%;
-  display: flex;
-  flex-direction: column;
-}
-.container-user > div {
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-  width: 100%;
-  height: 100px;
-  border-radius: 8px;
-  margin: 10px;
-}
-.container-user > div:hover {
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,.4);
-}
 
 .prior-text {
-  background-color: #FF515D;
   color: white;
   font-size: 19px;
   border-radius: 2px;
@@ -206,7 +177,7 @@ export default {
 .time-text {
   background-color: #4D47FF;
   color: white;
-  font-size: 19px;
+  font-size: 18px;
   border-radius: 2px;
   padding: 3px;
 }
@@ -230,7 +201,7 @@ export default {
 .buttons-text {
   margin-top: 85px;
 }
-.buttons-text button {
+button {
   border: 1px solid #267F00;
   border-radius: 8px;
   background-color: #54FF21;
@@ -241,7 +212,7 @@ export default {
   margin-right: 10px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
 }
-.buttons-text button:hover {
+button:hover {
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.4);
 }
 /*
@@ -304,8 +275,13 @@ export default {
     color: black;
     margin-bottom: 0;
   }*/
-   .red {
-    background-color: red;
-    border: 1px solid #ff5b5f;
+  .red {
+    background-color: #ff5b5f;
+  }
+  .yellow {
+    background-color: #dbe918;
+  }
+  .green {
+    background-color: #20bb0b;
   }
 </style>
