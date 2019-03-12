@@ -9,7 +9,8 @@ let connect = false;
 //Esp32S Server
 router.post('/esp-reload-hum/', async (req, res) => {
     const posts = await loadPostsCollection('posts');
-    await posts.findOneAndUpdate({_id: new mongodb.ObjectID(req.body.id)}, {$set:{sensorValue:req.body.sensorValue}});
+    await posts.findOneAndUpdate({_id: new mongodb.ObjectID(req.body[0].id)}, {$set:{sensorValue:req.body[0].sensorValue}});
+    await posts.findOneAndUpdate({_id: new mongodb.ObjectID(req.body[1].id)}, {$set:{sensorValue:req.body[1].sensorValue}});
     res.status(200).send();
 });
 
