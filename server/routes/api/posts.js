@@ -7,16 +7,12 @@ let connect = false;
 
 
 //Esp32S Server
-router.post('/esp/', async (req, res) => {
-    const posts = await loadPostsCollection('esp');
-    await posts.insertOne({
-        text: req.body.text,
-        type: req.body.type
-    });
-    res.status(201).send();
+router.post('/esp-reload-hum/', async (req, res) => {
+    const posts = await loadPostsCollection('posts');
+    await posts.findOneAndUpdate({_id: new mongodb.ObjectID(req.body.id)}, {$set:{sensorValue:req.body.sensorValue}});
+    res.status(200).send();
 });
 
-// Get Posts
 router.get('/esp/', async (req, res) => {
     const posts = await loadPostsCollection('posts');
     res.send(await posts.find({}).toArray());
@@ -58,11 +54,6 @@ router.put('/:id', async (req, res) => {
     res.status(200).send();
 });
 
-router.post('/esp-reload-hum/', async (req, res) => {
-    const posts = await loadPostsCollection('posts');
-    await posts.findOneAndUpdate({_id: new mongodb.ObjectID(req.body.id)}, {$set:{sensorValue:req.body.sensorValue}});
-    res.status(200).send();
-});
 
 async function loadPostsCollection(collect){
     if(!connect) {
