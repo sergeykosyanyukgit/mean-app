@@ -24,6 +24,7 @@
           <div class="buttons-text">
             <button @click="useNow(post._id)">Старт</button>
             <button @click="useLater(post._id)">Стоп</button>
+            <button @click="deletePost(post._id)">Del</button>
           </div>
         </div>
       </div>
@@ -102,10 +103,10 @@ export default {
     async useLater(id) {
       await PostService.usePoliv(id, '');
     },
-    /*async deletePost(id) {
+    async deletePost(id) {
       await PostService.deletePost(id);
       this.posts = await PostService.getPosts();
-    }*/
+    }
   }
 }
 </script>
