@@ -20,10 +20,11 @@
             <span> MotorPort: {{ post.motor }}</span>
           </div>
           <h1 class="text">{{ post.textTask }}</h1>
-          <span class="sensor-text">{{ post.sensorValue }}</span>
+          <span class="sensor-text">Влажность {{ post.sensorValue }}%</span>
           <div class="buttons-text">
-            <button @click="useNow(post._id)">Выполнить</button>
-            <button @click="useLater(post._id)">Позже</button>
+            <button @click="useNow(post._id)">Старт</button>
+            <button @click="useLater(post._id)">Стоп</button>
+            <button @click="deletePost(post._id)">Del</button>
           </div>
         </div>
       </div>
@@ -76,12 +77,20 @@ export default {
   },
   async created() {
     try {
-      this.dailyTasks = await PostService.getPosts();
+      setTimeout(()=>{
+        this.getPosts();
+      },1000);
     } catch(err) {
       this.error = err.message;
     }
   },
   methods: {
+    async getPosts() {
+      this.dailyTasks = await PostService.getPosts();
+      setTimeout(()=>{
+        this.getPosts();
+      },1000);
+    },
     async addTask() {
       if(this.bufferTask.prior != '' && this.bufferTask.time != '' && this.bufferTask.date != '' && this.bufferTask.textTask != '') {
         await PostService.insertPost(this.bufferTask);
@@ -89,16 +98,15 @@ export default {
       }
     },
     async useNow(id) {
-      console.log(id);
       await PostService.usePoliv(id, 'poliv');
     },
-    useLater(id) {
-      console.log(id);
+    async useLater(id) {
+      await PostService.usePoliv(id, '');
     },
-    /*async deletePost(id) {
+    async deletePost(id) {
       await PostService.deletePost(id);
       this.posts = await PostService.getPosts();
-    }*/
+    }
   }
 }
 </script>
