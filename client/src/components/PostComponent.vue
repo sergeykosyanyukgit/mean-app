@@ -38,11 +38,11 @@
           <label for="weakly">weakly</label>
           <input type="radio" name="prior" id="weakly" value="weakly" v-model="bufferTask.prior">
         </div>
-        <input type="time" v-model="bufferTask.time">
-        <input type="date" v-model="bufferTask.date">
-        <input type="text" placeholder="Text from task"  v-model="bufferTask.textTask">
-        <input type="number" placeholder="Port sensor"  v-model="bufferTask.sensor">
-        <input type="number" placeholder="Port motor"  v-model="bufferTask.motor">
+        <input type="time" v-model="bufferTask.time" class="inputs">
+        <input type="date" v-model="bufferTask.date" class="inputs">
+        <input type="text" placeholder="Text from task"  v-model="bufferTask.textTask" class="inputs">
+        <input type="number" placeholder="Port sensor"  v-model="bufferTask.sensor" class="inputs">
+        <input type="number" placeholder="Port motor"  v-model="bufferTask.motor" class="inputs">
         <button @click="addTask">Confirm</button>
       </div>
     </div>
@@ -105,6 +105,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.inputs {
+  padding: 10px;
+  border: 1px solid darkslategrey;
+  border-radius: 5px;
+  width: 70%;
+  margin-bottom: 10px;
+}
 .port {
   display: inline;
   float: left;
